@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { ArrowRight, Camera, Shirt } from 'lucide-react';
 import Navbar from '@/components/Navbar';
@@ -6,10 +5,12 @@ import Footer from '@/components/Footer';
 import UploadArea from '@/components/UploadArea';
 import ResultCard from '@/components/ResultCard';
 import { processImages } from '@/services/tryOnService';
+import { toast } from 'sonner';
 
 const TryOn = () => {
   const [humanImage, setHumanImage] = useState<File | null>(null);
   const [garmentImage, setGarmentImage] = useState<File | null>(null);
+  const [selectedGarmentUrl, setSelectedGarmentUrl] = useState<string | null>(null);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -22,8 +23,29 @@ const TryOn = () => {
 
   const handleGarmentImageSelected = (file: File) => {
     setGarmentImage(file);
+    setSelectedGarmentUrl(null);
     setResultImage(null);
     setError(null);
+  };
+
+  const handleFeaturedGarmentSelected = async (url: string) => {
+    try {
+      setSelectedGarmentUrl(url);
+      setGarmentImage(null);
+      setResultImage(null);
+      setError(null);
+      
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const filename = url.split('/').pop() || 'garment.jpg';
+      const file = new File([blob], filename, { type: blob.type });
+      
+      setGarmentImage(file);
+      toast.success('Garment selected! Now upload your photo or select another garment.');
+    } catch (err) {
+      console.error('Error fetching garment image:', err);
+      toast.error('Failed to load the selected garment. Please try again.');
+    }
   };
 
   const handleProcess = async () => {
@@ -50,6 +72,29 @@ const TryOn = () => {
       setIsProcessing(false);
     }
   };
+
+  const featuredGarments = [
+    {
+      imageUrl: "https://zuhd.store/cdn/shop/files/6KuwaitiModernity-SingleButtonBrillianceArtboard1_25e5b7f9-fce4-43e8-ae22-a7731079ad2f.jpg",
+      title: "Kuwaiti Modernity"
+    },
+    {
+      imageUrl: "https://zuhd.store/cdn/shop/files/Artboard2_f1eceec2-50f2-4fd6-af95-edaa3fca71ea.jpg?v=1695285662&width=1080",
+      title: "Modern Thobe"
+    },
+    {
+      imageUrl: "https://zuhd.store/cdn/shop/products/6KuwaitiModernity-SingleButtonBrillianceArtboard1.jpg?v=1695127828&width=1080",
+      title: "Single Button Brilliance"
+    },
+    {
+      imageUrl: "https://zuhd.store/cdn/shop/files/9ZuhdStyle-ModernIslamicAttireArtboard1.jpg?v=1694082159&width=1080",
+      title: "Zuhd Style"
+    },
+    {
+      imageUrl: "https://zuhd.store/cdn/shop/products/Artboard1_fdb57087-f939-47bb-81c4-862fdba4503f.png?v=1695127396&width=1080",
+      title: "Modern Islamic Attire"
+    }
+  ];
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -155,21 +200,26 @@ const TryOn = () => {
           )}
           
           <div className="mt-16 pt-12 border-t">
-            <h2 className="text-2xl font-semibold mb-6 text-center">Featured Try-On Examples</h2>
+            <h2 className="text-2xl font-semibold mb-6 text-center">Featured Garments - Click to Select</h2>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              <ResultCard 
-                imageUrl="/lovable-uploads/9ba1e5e1-ddfd-448f-a1a8-fc3b2bcb6158.png"
-                title="Casual Blue Outfit"
-              />
-              <ResultCard 
-                imageUrl="/lovable-uploads/c8499580-57dd-4d36-a597-43337a4473ef.png"
-                title="Elegant Evening Dress"
-              />
-              <ResultCard 
-                imageUrl="/lovable-uploads/81c125a4-d1a5-4e6a-8ac8-15736dc2452a.png"
-                title="Professional Suit"
-              />
+              {featuredGarments.map((garment, index) => (
+                <div 
+                  key={index} 
+                  className={`cursor-pointer transform transition-all duration-200 hover:scale-105 ${selectedGarmentUrl === garment.imageUrl ? 'ring-4 ring-primary ring-offset-2' : ''}`}
+                  onClick={() => handleFeaturedGarmentSelected(garment.imageUrl)}
+                >
+                  <ResultCard 
+                    imageUrl={garment.imageUrl}
+                    title={garment.title}
+                  />
+                  <div className="mt-2 text-center">
+                    <button className="text-sm text-primary font-medium hover:text-primary/80">
+                      Select for Try-On
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
           
