@@ -1,6 +1,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { cn } from '@/lib/utils';
+import { Skeleton } from './ui/skeleton';
 
 interface ComparisonSliderProps {
   beforeImage: string;
@@ -19,10 +20,14 @@ const ComparisonSlider = ({
 }: ComparisonSliderProps) => {
   const [sliderPosition, setSliderPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [beforeImageLoaded, setBeforeImageLoaded] = useState(false);
+  const [afterImageLoaded, setAfterImageLoaded] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const beforeImageRef = useRef<HTMLImageElement>(null);
   const afterImageRef = useRef<HTMLImageElement>(null);
+
+  // Determine if both images are loaded
+  const isLoaded = beforeImageLoaded && afterImageLoaded;
 
   const handleMouseDown = () => {
     setIsDragging(true);
@@ -40,39 +45,26 @@ const ComparisonSlider = ({
     setIsDragging(false);
   };
 
-  // Check if both images are loaded
+  const handleBeforeImageLoad = () => {
+    setBeforeImageLoaded(true);
+  };
+
+  const handleAfterImageLoad = () => {
+    setAfterImageLoaded(true);
+  };
+
   useEffect(() => {
-    let beforeLoaded = false;
-    let afterLoaded = false;
-
-    const checkAllLoaded = () => {
-      if (beforeLoaded && afterLoaded) {
-        setIsLoaded(true);
-      }
-    };
-
-    if (beforeImageRef.current) {
-      if (beforeImageRef.current.complete) {
-        beforeLoaded = true;
-        checkAllLoaded();
-      } else {
-        beforeImageRef.current.onload = () => {
-          beforeLoaded = true;
-          checkAllLoaded();
-        };
-      }
+    // Reset loaded state when image sources change
+    setBeforeImageLoaded(false);
+    setAfterImageLoaded(false);
+    
+    // Check if images are already cached and loaded
+    if (beforeImageRef.current?.complete) {
+      setBeforeImageLoaded(true);
     }
-
-    if (afterImageRef.current) {
-      if (afterImageRef.current.complete) {
-        afterLoaded = true;
-        checkAllLoaded();
-      } else {
-        afterImageRef.current.onload = () => {
-          afterLoaded = true;
-          checkAllLoaded();
-        };
-      }
+    
+    if (afterImageRef.current?.complete) {
+      setAfterImageLoaded(true);
     }
   }, [beforeImage, afterImage]);
 
@@ -118,7 +110,7 @@ const ComparisonSlider = ({
       ref={containerRef}
       className={cn(
         'relative w-full h-full overflow-hidden rounded-xl shadow-elevated cursor-grab active:cursor-grabbing',
-        !isLoaded && 'bg-muted animate-pulse',
+        !isLoaded && 'bg-muted',
         className
       )}
     >
@@ -137,24 +129,27 @@ const ComparisonSlider = ({
           alt="Before" 
           className={cn(
             "object-cover w-full h-full",
-            !isLoaded && "opacity-0"
+            !beforeImageLoaded && "opacity-0"
           )}
-          onLoad={() => beforeImageRef.current?.complete && afterImageRef.current?.complete && setIsLoaded(true)}
+          onLoad={handleBeforeImageLoad}
         />
       </div>
       
       {/* After Image (shown based on slider position) */}
       <div 
         className="absolute inset-0 h-full overflow-hidden" 
-        style={{ width: `${sliderPosition}%`, opacity: isLoaded ? 1 : 0 }}
+        style={{ width: `${sliderPosition}%` }}
       >
         <img 
           ref={afterImageRef}
           src={afterImage} 
           alt="After" 
-          className="object-cover w-full h-full"
+          className={cn(
+            "object-cover w-full h-full",
+            !afterImageLoaded && "opacity-0"
+          )}
           style={{ objectPosition: 'left center' }}
-          onLoad={() => beforeImageRef.current?.complete && afterImageRef.current?.complete && setIsLoaded(true)}
+          onLoad={handleAfterImageLoad}
         />
       </div>
       
