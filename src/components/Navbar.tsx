@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -25,6 +24,7 @@ const Navbar = () => {
   const navLinks = [
     { name: 'Home', path: '/' },
     { name: 'Try On', path: '/try-on' },
+    { name: 'Islamic Try On', path: '/islamic-try-on' },
     { name: 'How It Works', path: '/#how-it-works' },
     { name: 'About', path: '/#about' },
   ];
