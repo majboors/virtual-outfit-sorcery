@@ -91,34 +91,53 @@ export const processImages = async (
       };
     }
     
-    // Parse the successful response
-    let data;
+    // SUCCESS: Handle direct image response (not JSON)
     try {
-      data = await response.json();
-      console.log('API success response received');
-    } catch (parseError) {
-      console.error('Error parsing successful response:', parseError);
+      // Get the content type to confirm it's an image
+      const contentType = response.headers.get('content-type');
+      console.log('Response content type:', contentType);
       
-      // Try to read as text for debugging
-      const textResponse = await response.text();
-      console.log('Response content (text):', textResponse.substring(0, 100) + '...');
+      if (contentType && contentType.includes('image')) {
+        // Get the image as a blob
+        const imageBlob = await response.blob();
+        
+        // Create an object URL from the blob
+        const imageUrl = URL.createObjectURL(imageBlob);
+        console.log('Image blob created, size:', imageBlob.size, 'bytes');
+        
+        toast.success('Images processed successfully!', { id: 'processing' });
+        
+        return {
+          success: true,
+          resultImage: imageUrl,
+        };
+      } else {
+        // Unexpected content type
+        console.error('Unexpected content type in successful response:', contentType);
+        
+        // Try to read response as text for debugging
+        const textResponse = await response.text();
+        console.log('Response content (text):', textResponse.substring(0, 100) + '...');
+        
+        toast.error('Unexpected response format from server', { id: 'processing' });
+        return {
+          success: false,
+          resultImage: '',
+          error: 'Unexpected response format from server',
+          rawError: { contentType, responsePreview: textResponse.substring(0, 100) }
+        };
+      }
+    } catch (processError) {
+      console.error('Error processing successful response:', processError);
       
-      toast.error('Failed to parse API response', { id: 'processing' });
+      toast.error('Failed to process server response', { id: 'processing' });
       return {
         success: false,
         resultImage: '',
-        error: 'Failed to parse the response from the server',
-        rawError: { parseError, responsePreview: textResponse.substring(0, 100) }
+        error: 'Failed to process server response',
+        rawError: processError
       };
     }
-    
-    // Success
-    toast.success('Images processed successfully!', { id: 'processing' });
-    
-    return {
-      success: true,
-      resultImage: `data:image/jpeg;base64,${data.result_image}`,
-    };
   } catch (error) {
     console.error('Error processing images:', error);
     toast.error('Failed to process images', { id: 'processing' });
