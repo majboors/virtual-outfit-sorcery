@@ -4,12 +4,19 @@ import Footer from '@/components/Footer';
 import HeroSection from '@/components/HeroSection';
 import FeatureSection from '@/components/FeatureSection';
 import HowItWorks from '@/components/HowItWorks';
+import { MetaTags } from '@/utils/MetaTags';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 
 const Index = () => {
   return (
     <div className="min-h-screen">
+      <MetaTags 
+        title="AI Virtual Clothing Try-On Experience"
+        description="Transform your online shopping with our AI-powered virtual try-on technology. See exactly how clothes will look on you before purchasing."
+        canonicalUrl="https://virtualfit.ai"
+      />
+      
       <Navbar />
       
       <main>

@@ -1,9 +1,11 @@
+
 import { useState, useRef, useEffect } from 'react';
 import { ArrowRight, Camera, Shirt, RefreshCw } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import UploadArea from '@/components/UploadArea';
 import ResultCard from '@/components/ResultCard';
+import { MetaTags } from '@/utils/MetaTags';
 import { processImages } from '@/services/tryOnService';
 import { toast } from 'sonner';
 
@@ -125,6 +127,12 @@ const TryOn = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <MetaTags 
+        title="Try On Clothes Virtually"
+        description="Upload your photo and try on clothes virtually using our AI technology. See how garments will look on you before purchasing."
+        canonicalUrl="https://virtualfit.ai/try-on"
+      />
+      
       <Navbar />
       
       {showFullScreenLoader && (

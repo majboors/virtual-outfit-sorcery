@@ -4,11 +4,18 @@ import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import ResultCard from '@/components/ResultCard';
+import { MetaTags } from '@/utils/MetaTags';
 import { Button } from '@/components/ui/button';
 
 const IslamicTryOn = () => {
   return (
     <div className="min-h-screen flex flex-col">
+      <MetaTags 
+        title="Islamic Virtual Try-On Experience"
+        description="Try on modern Islamic clothing virtually with our AI technology. Experience elegant, modest fashion with our realistic virtual try-on tool."
+        canonicalUrl="https://virtualfit.ai/islamic-try-on"
+      />
+      
       <Navbar />
 
       {/* Hero Section */}
