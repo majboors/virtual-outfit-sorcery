@@ -46,7 +46,7 @@ const HeroSection = () => {
               alt="AI Virtual Try-On Showcase" 
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-transparent opacity-80" />
+            <div className="absolute inset-0 bg-[url('https://cdn.dribbble.com/userupload/10622566/file/original-ecafdfef4ef785e6317c3dc647ad25aa.jpg')] bg-cover bg-center opacity-50 mix-blend-overlay" />
           </div>
           <div className="absolute -bottom-6 -right-6 w-48 h-48 rounded-lg overflow-hidden shadow-elevated glass-card scale-in delayed-300">
             <img 
