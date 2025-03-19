@@ -42,15 +42,14 @@ const HeroSection = () => {
           <div className="absolute inset-0 rounded-xl overflow-hidden shadow-elevated">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-50 opacity-30" />
             <img 
-              src="/lovable-uploads/9ba1e5e1-ddfd-448f-a1a8-fc3b2bcb6158.png" 
+              src="https://cdn.dribbble.com/userupload/10622566/file/original-ecafdfef4ef785e6317c3dc647ad25aa.jpg" 
               alt="AI Virtual Try-On Showcase" 
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-[url('https://cdn.dribbble.com/userupload/10622566/file/original-ecafdfef4ef785e6317c3dc647ad25aa.jpg')] bg-cover bg-center opacity-50 mix-blend-overlay" />
           </div>
           <div className="absolute -bottom-6 -right-6 w-48 h-48 rounded-lg overflow-hidden shadow-elevated glass-card scale-in delayed-300">
             <img 
-              src="/lovable-uploads/c8499580-57dd-4d36-a597-43337a4473ef.png" 
+              src="https://cdn.dribbble.com/userupload/15705594/file/original-1e4c30780c5f7c9777b9834fa368fc23.jpg" 
               alt="Virtual Try-On Example" 
               className="w-full h-full object-cover"
             />
