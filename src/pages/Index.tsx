@@ -18,8 +18,8 @@ const Index = () => {
         <FeatureSection
           title="Virtual Try On Clothes With AI Magic"
           description="Dive into the enchanting realm of fashion with our AI clothes technology. By training sophisticated models on extensive image datasets, our system converts your photos into virtual try-on experiences in just seconds."
-          beforeImage="/lovable-uploads/9ba1e5e1-ddfd-448f-a1a8-fc3b2bcb6158.png"
-          afterImage="/lovable-uploads/c8499580-57dd-4d36-a597-43337a4473ef.png"
+          beforeImage="https://www.aiease.ai/wp-content/uploads/2024/11/change-woman-clothes-to-a-black-floral-dress-with-ai-ease-virtual-clothes-try-on-tool.webp"
+          afterImage="https://www.aiease.ai/wp-content/uploads/2024/11/virtual-try-on-floral-dress-to-a-female-model-portrait-with-ai-ease-for-free.web"
           className="bg-gradient-to-br from-blue-50 to-indigo-50/50"
         >
           <Link 
@@ -34,16 +34,16 @@ const Index = () => {
         <FeatureSection
           title="Versatile Clothes Try-on for Every Occasion"
           description="Virtually try on clothes in different styles to suit specific occasions and needs. Whether you're preparing for a formal event, a casual outing, or seeking daily inspiration, our technology adapts to your needs."
-          beforeImage="/lovable-uploads/81c125a4-d1a5-4e6a-8ac8-15736dc2452a.png"
-          afterImage="/lovable-uploads/340fb536-7eea-460d-b21e-ee8df9acdd26.png"
+          beforeImage="https://www.aiease.ai/wp-content/uploads/2024/11/a-man-virtually-try-on-blue-suit-halloween-shirt-and-hoodie-with-ai.webp"
+          afterImage="https://www.aiease.ai/wp-content/uploads/2024/11/virtual-try-on-white-dress-with-ai-ease-free-ai-tool-1.webp"
           reversed={true}
         />
         
         <FeatureSection
           title="Produce Realistic Clothing Try-on Effects"
           description="Our virtual clothing try-on tool utilizes smart artificial intelligence, providing a realistic preview of how outfits will look on you. It is meticulously designed to accommodate various clothing styles and body types."
-          beforeImage="/lovable-uploads/340fb536-7eea-460d-b21e-ee8df9acdd26.png"
-          afterImage="/lovable-uploads/81c125a4-d1a5-4e6a-8ac8-15736dc2452a.png"
+          beforeImage="https://www.aiease.ai/wp-content/uploads/2024/11/ai-ease-generates-virtual-clothes-with-realistic-effects.webp"
+          afterImage="https://www.aiease.ai/wp-content/uploads/2024/11/virtual-try-on-white-dress-with-ai-ease-free-ai-tool-1.webp"
           className="bg-gradient-to-br from-blue-50 to-indigo-50/50"
         >
           <Link 
@@ -76,7 +76,7 @@ const Index = () => {
               <div className="relative">
                 <div className="aspect-video rounded-xl overflow-hidden shadow-elevated bg-muted">
                   <img 
-                    src="/lovable-uploads/340fb536-7eea-460d-b21e-ee8df9acdd26.png" 
+                    src="https://www.aiease.ai/wp-content/uploads/2024/11/virtual-try-on-floral-dress-to-a-female-model-portrait-with-ai-ease-for-free.web" 
                     alt="Virtual Try-On Technology" 
                     className="w-full h-full object-cover"
                   />

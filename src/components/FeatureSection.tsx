@@ -47,7 +47,7 @@ const FeatureSection = ({
             <ComparisonSlider 
               beforeImage={beforeImage}
               afterImage={afterImage}
-              className="w-full h-full"
+              className="w-full h-full rounded-xl overflow-hidden shadow-elevated"
             />
           </div>
         </div>

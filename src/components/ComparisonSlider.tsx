@@ -19,7 +19,10 @@ const ComparisonSlider = ({
 }: ComparisonSliderProps) => {
   const [sliderPosition, setSliderPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const beforeImageRef = useRef<HTMLImageElement>(null);
+  const afterImageRef = useRef<HTMLImageElement>(null);
 
   const handleMouseDown = () => {
     setIsDragging(true);
@@ -36,6 +39,42 @@ const ComparisonSlider = ({
   const handleTouchEnd = () => {
     setIsDragging(false);
   };
+
+  // Check if both images are loaded
+  useEffect(() => {
+    let beforeLoaded = false;
+    let afterLoaded = false;
+
+    const checkAllLoaded = () => {
+      if (beforeLoaded && afterLoaded) {
+        setIsLoaded(true);
+      }
+    };
+
+    if (beforeImageRef.current) {
+      if (beforeImageRef.current.complete) {
+        beforeLoaded = true;
+        checkAllLoaded();
+      } else {
+        beforeImageRef.current.onload = () => {
+          beforeLoaded = true;
+          checkAllLoaded();
+        };
+      }
+    }
+
+    if (afterImageRef.current) {
+      if (afterImageRef.current.complete) {
+        afterLoaded = true;
+        checkAllLoaded();
+      } else {
+        afterImageRef.current.onload = () => {
+          afterLoaded = true;
+          checkAllLoaded();
+        };
+      }
+    }
+  }, [beforeImage, afterImage]);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -79,34 +118,52 @@ const ComparisonSlider = ({
       ref={containerRef}
       className={cn(
         'relative w-full h-full overflow-hidden rounded-xl shadow-elevated cursor-grab active:cursor-grabbing',
+        !isLoaded && 'bg-muted animate-pulse',
         className
       )}
     >
+      {/* Loading Indicator */}
+      {!isLoaded && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
+        </div>
+      )}
+      
       {/* Before Image */}
       <div className="absolute inset-0 w-full h-full">
         <img 
+          ref={beforeImageRef}
           src={beforeImage} 
           alt="Before" 
-          className="object-cover w-full h-full"
+          className={cn(
+            "object-cover w-full h-full",
+            !isLoaded && "opacity-0"
+          )}
+          onLoad={() => beforeImageRef.current?.complete && afterImageRef.current?.complete && setIsLoaded(true)}
         />
       </div>
       
       {/* After Image (shown based on slider position) */}
       <div 
         className="absolute inset-0 h-full overflow-hidden" 
-        style={{ width: `${sliderPosition}%` }}
+        style={{ width: `${sliderPosition}%`, opacity: isLoaded ? 1 : 0 }}
       >
         <img 
+          ref={afterImageRef}
           src={afterImage} 
           alt="After" 
           className="object-cover absolute left-0 top-0 w-[100vh] max-w-none h-full"
           style={{ width: `${100 / (sliderPosition / 100)}%` }}
+          onLoad={() => beforeImageRef.current?.complete && afterImageRef.current?.complete && setIsLoaded(true)}
         />
       </div>
       
       {/* Slider */}
       <div 
-        className="absolute inset-y-0 flex items-center justify-center w-1 bg-white cursor-grab active:cursor-grabbing"
+        className={cn(
+          "absolute inset-y-0 flex items-center justify-center w-1 bg-white cursor-grab active:cursor-grabbing",
+          !isLoaded && "opacity-0"
+        )}
         style={{ left: `${sliderPosition}%` }}
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
@@ -121,10 +178,16 @@ const ComparisonSlider = ({
       </div>
       
       {/* Labels */}
-      <div className="absolute top-4 left-4 bg-black/70 text-white px-3 py-1 rounded-full text-sm font-medium">
+      <div className={cn(
+        "absolute top-4 left-4 bg-black/70 text-white px-3 py-1 rounded-full text-sm font-medium",
+        !isLoaded && "opacity-0"
+      )}>
         {beforeLabel}
       </div>
-      <div className="absolute top-4 right-4 bg-black/70 text-white px-3 py-1 rounded-full text-sm font-medium">
+      <div className={cn(
+        "absolute top-4 right-4 bg-black/70 text-white px-3 py-1 rounded-full text-sm font-medium",
+        !isLoaded && "opacity-0"
+      )}>
         {afterLabel}
       </div>
     </div>
