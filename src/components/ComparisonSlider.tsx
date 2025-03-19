@@ -152,8 +152,8 @@ const ComparisonSlider = ({
           ref={afterImageRef}
           src={afterImage} 
           alt="After" 
-          className="object-cover absolute left-0 top-0 w-[100vh] max-w-none h-full"
-          style={{ width: `${100 / (sliderPosition / 100)}%` }}
+          className="object-cover w-full h-full"
+          style={{ objectPosition: 'left center' }}
           onLoad={() => beforeImageRef.current?.complete && afterImageRef.current?.complete && setIsLoaded(true)}
         />
       </div>
