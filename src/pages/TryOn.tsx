@@ -1,4 +1,5 @@
-import { useState } from 'react';
+
+import { useState, useRef } from 'react';
 import { ArrowRight, Camera, Shirt } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -14,6 +15,9 @@ const TryOn = () => {
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // Create a ref for the garment upload section
+  const garmentSectionRef = useRef<HTMLDivElement>(null);
 
   const handleHumanImageSelected = (file: File) => {
     setHumanImage(file);
@@ -42,6 +46,14 @@ const TryOn = () => {
       
       setGarmentImage(file);
       toast.success('Garment selected! Now upload your photo or select another garment.');
+      
+      // Scroll to the garment section after selection
+      if (garmentSectionRef.current) {
+        garmentSectionRef.current.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
     } catch (err) {
       console.error('Error fetching garment image:', err);
       toast.error('Failed to load the selected garment. Please try again.');
@@ -136,17 +148,27 @@ const TryOn = () => {
               </div>
             </div>
             
-            <div className="space-y-6">
+            <div className="space-y-6" ref={garmentSectionRef}>
               <div className="flex items-center">
                 <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-medium">
                   2
                 </div>
-                <h2 className="ml-3 text-xl font-semibold">Upload a Garment</h2>
+                <h2 className="ml-3 text-xl font-semibold">
+                  {selectedGarmentUrl ? 'Selected Garment' : 'Upload a Garment'}
+                </h2>
               </div>
+              
+              {selectedGarmentUrl && (
+                <div className="mb-4 text-center">
+                  <div className="inline-block bg-primary/10 px-3 py-1 rounded-full text-primary text-sm font-medium">
+                    Garment selected from featured collection
+                  </div>
+                </div>
+              )}
               
               <UploadArea 
                 onFileSelected={handleGarmentImageSelected}
-                label="Upload a clothing item"
+                label={selectedGarmentUrl ? "Change selected garment" : "Upload a clothing item"}
                 className="h-80"
               />
               
