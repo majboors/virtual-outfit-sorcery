@@ -1,5 +1,5 @@
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { Upload, Image } from 'lucide-react';
 
@@ -9,6 +9,7 @@ interface UploadAreaProps {
   className?: string;
   accept?: string;
   maxSize?: number; // in MB
+  initialPreview?: string; // Add this prop to handle external preview URLs
 }
 
 const UploadArea = ({
@@ -16,12 +17,20 @@ const UploadArea = ({
   label = 'Upload an image',
   className,
   accept = 'image/*',
-  maxSize = 5 // 5MB default
+  maxSize = 5, // 5MB default
+  initialPreview = null
 }: UploadAreaProps) => {
   const [isDragging, setIsDragging] = useState(false);
-  const [preview, setPreview] = useState<string | null>(null);
+  const [preview, setPreview] = useState<string | null>(initialPreview);
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Update preview when initialPreview changes
+  useEffect(() => {
+    if (initialPreview) {
+      setPreview(initialPreview);
+    }
+  }, [initialPreview]);
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();

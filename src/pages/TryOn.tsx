@@ -1,5 +1,4 @@
-
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { ArrowRight, Camera, Shirt } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -16,7 +15,6 @@ const TryOn = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  // Create a ref for the garment upload section
   const garmentSectionRef = useRef<HTMLDivElement>(null);
 
   const handleHumanImageSelected = (file: File) => {
@@ -47,7 +45,6 @@ const TryOn = () => {
       setGarmentImage(file);
       toast.success('Garment selected! Now upload your photo or select another garment.');
       
-      // Scroll to the garment section after selection
       if (garmentSectionRef.current) {
         garmentSectionRef.current.scrollIntoView({ 
           behavior: 'smooth',
@@ -170,6 +167,7 @@ const TryOn = () => {
                 onFileSelected={handleGarmentImageSelected}
                 label={selectedGarmentUrl ? "Change selected garment" : "Upload a clothing item"}
                 className="h-80"
+                initialPreview={selectedGarmentUrl}
               />
               
               <div className="text-sm text-muted-foreground">
