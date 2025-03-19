@@ -1,4 +1,3 @@
-
 import { toast } from "sonner";
 
 interface TryOnResult {
@@ -9,17 +8,32 @@ interface TryOnResult {
 
 export const processImages = async (
   humanImage: File,
-  garmentImage: File
+  garmentImage: File | string // Accept either File or direct URL string
 ): Promise<TryOnResult> => {
   try {
-    // Convert both images to base64
+    // Convert human image to base64
     const humanImageBase64 = await fileToBase64(humanImage);
-    const garmentImageBase64 = await fileToBase64(garmentImage);
+    
+    // Handle garment image - could be a File or a URL string
+    let garmentImageUrl: string;
+    
+    if (typeof garmentImage === 'string') {
+      // If it's already a URL string, use it directly
+      garmentImageUrl = garmentImage;
+    } else {
+      // Otherwise convert the File to a data URL (not a base64 string)
+      const reader = new FileReader();
+      garmentImageUrl = await new Promise((resolve, reject) => {
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(garmentImage);
+      });
+    }
     
     // Create the payload with correct parameter names
     const payload = {
       human_image: humanImageBase64,
-      garment_image: garmentImageBase64 // Using the expected parameter name
+      garment_image: garmentImageUrl // Pass the URL directly
     };
     
     // Show loading toast

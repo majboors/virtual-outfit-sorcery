@@ -30,36 +30,30 @@ const TryOn = () => {
     setError(null);
   };
 
-  const handleFeaturedGarmentSelected = async (url: string) => {
-    try {
-      setSelectedGarmentUrl(url);
-      setGarmentImage(null);
-      setResultImage(null);
-      setError(null);
-      
-      const response = await fetch(url);
-      const blob = await response.blob();
-      const filename = url.split('/').pop() || 'garment.jpg';
-      const file = new File([blob], filename, { type: blob.type });
-      
-      setGarmentImage(file);
-      toast.success('Garment selected! Now upload your photo or select another garment.');
-      
-      if (garmentSectionRef.current) {
-        garmentSectionRef.current.scrollIntoView({ 
-          behavior: 'smooth',
-          block: 'start'
-        });
-      }
-    } catch (err) {
-      console.error('Error fetching garment image:', err);
-      toast.error('Failed to load the selected garment. Please try again.');
+  const handleFeaturedGarmentSelected = (url: string) => {
+    setSelectedGarmentUrl(url);
+    setGarmentImage(null);
+    setResultImage(null);
+    setError(null);
+    
+    toast.success('Garment selected! Now upload your photo or select another garment.');
+    
+    if (garmentSectionRef.current) {
+      garmentSectionRef.current.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
     }
   };
 
   const handleProcess = async () => {
-    if (!humanImage || !garmentImage) {
-      setError('Please upload both a human image and a garment image.');
+    if (!humanImage) {
+      setError('Please upload a photo of yourself.');
+      return;
+    }
+    
+    if (!garmentImage && !selectedGarmentUrl) {
+      setError('Please upload or select a garment image.');
       return;
     }
 
@@ -67,7 +61,13 @@ const TryOn = () => {
     setError(null);
 
     try {
-      const result = await processImages(humanImage, garmentImage);
+      const garmentToProcess = selectedGarmentUrl || garmentImage;
+      
+      if (!garmentToProcess) {
+        throw new Error('No garment selected');
+      }
+      
+      const result = await processImages(humanImage, garmentToProcess);
       
       if (result.success) {
         setResultImage(result.resultImage);
