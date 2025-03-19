@@ -1,9 +1,11 @@
+
 import { toast } from "sonner";
 
 interface TryOnResult {
   resultImage: string;
   success: boolean;
   error?: string;
+  rawError?: any; // To capture raw error objects for debugging
 }
 
 export const processImages = async (
@@ -30,6 +32,12 @@ export const processImages = async (
       });
     }
     
+    // Log payload before sending (without sensitive data)
+    console.log('Preparing API request with payload structure:', {
+      human_image: 'base64_string_present',
+      garment_image: typeof garmentImageUrl === 'string' ? 'url_string_present' : 'data_url_present'
+    });
+    
     // Create the payload with correct parameter names
     const payload = {
       human_image: humanImageBase64,
@@ -40,6 +48,7 @@ export const processImages = async (
     toast.loading('Processing your images...', { id: 'processing' });
     
     // Make the API request
+    console.log('Sending request to API endpoint');
     const response = await fetch('https://tryon.techrealm.pk/process-image', {
       method: 'POST',
       headers: {
@@ -48,17 +57,60 @@ export const processImages = async (
       body: JSON.stringify(payload),
     });
     
+    console.log('API response status:', response.status);
+    
+    // If not 200 OK, attempt to read the error
     if (!response.ok) {
-      const errorData = await response.json();
-      toast.error('Failed to process images', { id: 'processing' });
+      let errorMessage = 'Failed to process images';
+      let errorData: any = null;
+      
+      try {
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          errorData = await response.json();
+          console.error('API error response:', errorData);
+          errorMessage = errorData.error || errorData.message || errorMessage;
+        } else {
+          // If not JSON, read as text for logging
+          const textResponse = await response.text();
+          console.error('API non-JSON error response:', textResponse);
+          errorData = { raw: textResponse };
+        }
+      } catch (parseError) {
+        console.error('Failed to parse error response:', parseError);
+        errorData = { parseError: String(parseError) };
+      }
+      
+      toast.error(errorMessage, { id: 'processing' });
+      
       return {
         success: false,
         resultImage: '',
-        error: errorData.error || errorData.message || 'An error occurred while processing the images'
+        error: errorMessage,
+        rawError: errorData
       };
     }
     
-    const data = await response.json();
+    // Parse the successful response
+    let data;
+    try {
+      data = await response.json();
+      console.log('API success response received');
+    } catch (parseError) {
+      console.error('Error parsing successful response:', parseError);
+      
+      // Try to read as text for debugging
+      const textResponse = await response.text();
+      console.log('Response content (text):', textResponse.substring(0, 100) + '...');
+      
+      toast.error('Failed to parse API response', { id: 'processing' });
+      return {
+        success: false,
+        resultImage: '',
+        error: 'Failed to parse the response from the server',
+        rawError: { parseError, responsePreview: textResponse.substring(0, 100) }
+      };
+    }
     
     // Success
     toast.success('Images processed successfully!', { id: 'processing' });
@@ -74,7 +126,8 @@ export const processImages = async (
     return {
       success: false,
       resultImage: '',
-      error: 'An unexpected error occurred. Please try again.'
+      error: 'An unexpected error occurred. Please try again.',
+      rawError: error
     };
   }
 };

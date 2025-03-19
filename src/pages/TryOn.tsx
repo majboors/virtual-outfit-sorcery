@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { ArrowRight, Camera, Shirt } from 'lucide-react';
+import { ArrowRight, Camera, Shirt, RefreshCw } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import UploadArea from '@/components/UploadArea';
@@ -14,6 +14,8 @@ const TryOn = () => {
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
+  const [showFullScreenLoader, setShowFullScreenLoader] = useState(false);
   
   const garmentSectionRef = useRef<HTMLDivElement>(null);
 
@@ -59,6 +61,9 @@ const TryOn = () => {
 
     setIsProcessing(true);
     setError(null);
+    setShowFullScreenLoader(true);
+    
+    console.log(`Processing attempt ${retryCount + 1}`);
 
     try {
       const garmentToProcess = selectedGarmentUrl || garmentImage;
@@ -71,15 +76,28 @@ const TryOn = () => {
       
       if (result.success) {
         setResultImage(result.resultImage);
+        setRetryCount(0);
       } else {
+        console.error('Processing failed with error:', result.error, 'Raw error:', result.rawError);
         setError(result.error || 'Failed to process images');
+        
+        if (result.rawError) {
+          console.error('Additional error details:', result.rawError);
+        }
       }
     } catch (err) {
+      console.error('Unexpected error during processing:', err);
       setError('An unexpected error occurred. Please try again.');
-      console.error(err);
     } finally {
       setIsProcessing(false);
+      setShowFullScreenLoader(false);
     }
+  };
+
+  const handleRetry = () => {
+    setRetryCount(prev => prev + 1);
+    setError(null);
+    handleProcess();
   };
 
   const featuredGarments = [
@@ -108,6 +126,21 @@ const TryOn = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
+      
+      {showFullScreenLoader && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white p-8 rounded-xl shadow-xl max-w-md w-full text-center">
+            <div className="w-16 h-16 border-4 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mb-6" />
+            <h3 className="text-xl font-semibold mb-2">Processing Your Try-On</h3>
+            <p className="text-muted-foreground">Please wait while our AI generates your personalized try-on result...</p>
+            {retryCount > 0 && (
+              <div className="mt-4 text-sm text-muted-foreground">
+                Attempt {retryCount + 1}... 
+              </div>
+            )}
+          </div>
+        </div>
+      )}
       
       <main className="flex-1 pt-24 pb-16">
         <div className="max-w-6xl mx-auto px-6 md:px-12">
@@ -184,7 +217,7 @@ const TryOn = () => {
           <div className="text-center mb-12">
             <button
               onClick={handleProcess}
-              disabled={!humanImage || !garmentImage || isProcessing}
+              disabled={(!humanImage || (!garmentImage && !selectedGarmentUrl)) || isProcessing}
               className="inline-flex items-center justify-center gap-2 bg-primary text-white px-8 py-3 rounded-md font-medium hover:bg-primary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed group"
             >
               {isProcessing ? (
@@ -201,8 +234,17 @@ const TryOn = () => {
             </button>
             
             {error && (
-              <div className="mt-4 text-destructive text-sm">
-                {error}
+              <div className="mt-4 space-y-2">
+                <div className="text-destructive text-sm font-medium">
+                  {error}
+                </div>
+                <button 
+                  onClick={handleRetry}
+                  className="inline-flex items-center text-sm text-primary hover:text-primary/80 font-medium"
+                >
+                  <RefreshCw size={14} className="mr-1" />
+                  Try again
+                </button>
               </div>
             )}
           </div>
