@@ -12,16 +12,14 @@ export const processImages = async (
   garmentImage: File
 ): Promise<TryOnResult> => {
   try {
-    // First, convert images to base64
+    // Convert both images to base64
     const humanImageBase64 = await fileToBase64(humanImage);
+    const garmentImageBase64 = await fileToBase64(garmentImage);
     
-    // For garment image, we need a URI/URL
-    const garmentImageUrl = await fileToObjectURL(garmentImage);
-    
-    // Create the payload
+    // Create the payload with correct parameter names
     const payload = {
       human_image: humanImageBase64,
-      garm_img: garmentImageUrl
+      garment_image: garmentImageBase64
     };
     
     // Show loading toast
@@ -82,14 +80,5 @@ const fileToBase64 = (file: File): Promise<string> => {
       }
     };
     reader.onerror = error => reject(error);
-  });
-};
-
-// Helper function to convert File to Object URL
-const fileToObjectURL = (file: File): Promise<string> => {
-  return new Promise((resolve) => {
-    // Create a blob URL for the file
-    const objectURL = URL.createObjectURL(file);
-    resolve(objectURL);
   });
 };
