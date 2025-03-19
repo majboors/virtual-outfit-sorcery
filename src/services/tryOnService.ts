@@ -40,7 +40,7 @@ export const processImages = async (
       return {
         success: false,
         resultImage: '',
-        error: errorData.message || 'An error occurred while processing the images'
+        error: errorData.error || errorData.message || 'An error occurred while processing the images'
       };
     }
     
