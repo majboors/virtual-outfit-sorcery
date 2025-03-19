@@ -8,6 +8,7 @@ import { HelmetProvider } from "react-helmet-async";
 import Index from "./pages/Index";
 import TryOn from "./pages/TryOn";
 import IslamicTryOn from "./pages/IslamicTryOn";
+import VirtualTryOn from "./pages/VirtualTryOn";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -23,6 +24,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/try-on" element={<TryOn />} />
             <Route path="/islamic-try-on" element={<IslamicTryOn />} />
+            <Route path="/virtual-tryon" element={<VirtualTryOn />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
