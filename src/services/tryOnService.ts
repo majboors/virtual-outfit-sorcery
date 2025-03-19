@@ -19,7 +19,7 @@ export const processImages = async (
     // Create the payload with correct parameter names
     const payload = {
       human_image: humanImageBase64,
-      garment_image: garmentImageBase64
+      garm_img: garmentImageBase64 // Using the expected parameter name
     };
     
     // Show loading toast
